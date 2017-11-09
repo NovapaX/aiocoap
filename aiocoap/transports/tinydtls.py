@@ -161,6 +161,8 @@ class DTLSClientConnection(interfaces.EndpointAddress):
                 self._retransmission_task.cancel()
                 self._dtls_socket.write(self._connection, message)
                 self._retransmission_task = asyncio.Task(self._run_retransmissions())
+        except asyncio.CancelledError as e:
+            pass # we expect this one, and we should let is pass and continue to close
         except OSError as e:
             self.log.debug("Expressing exception %r as errno %d.", e, e.errno)
             self.coaptransport.new_error_callback(e.errno, self)
